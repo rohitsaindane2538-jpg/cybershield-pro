@@ -1,0 +1,17 @@
+# Local full stack: app + PostgreSQL.   docker compose up --build
+services:
+  app:
+    build: .
+    ports: ["3000:3000"]
+    env_file: [.env]
+    environment:
+      DATABASE_URL: postgres://cybershield:cybershield@postgres:5432/cybershield
+      NODE_ENV: development
+    depends_on:
+      postgres: { condition: service_healthy }
+  postgres:
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: cybershield, POSTGRES_PASSWORD: cybershield, POSTGRES_DB: cybershield }
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U cybershield"], interval: 5s, retries: 10 }
+volumes: { pgdata: {} }

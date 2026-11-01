@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CyberShield</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<div class="auth" id="auth"><form class="glass authcard" id="authForm">
+  <h1 id="authTitle">Sign in</h1><p class="muted" style="margin:0">Your scans and reports are private to your account.</p>
+  <label for="au" class="muted" style="margin:0">Username</label><input type="text" id="au" autocomplete="username" required>
+  <label for="ap" class="muted" style="margin:0">Password</label><input type="password" id="ap" autocomplete="current-password" required>
+  <div id="authErr" class="err" role="alert"></div>
+  <button id="authGo">Sign in</button>
+  <button type="button" class="sw" id="authSw">Create an account instead</button>
+</form></div>
+
+<div class="app">
+  <nav class="rail glass" aria-label="Main">
+    <div class="brand"><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5l-8-3Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>CyberShield</span></div>
+    <button class="tab on" data-tab="dash">Dashboard</button>
+    <button class="tab" data-tab="agent">SOC agent</button>
+    <button class="tab" data-tab="intel">Threat intel</button>
+    <button class="tab" data-tab="phishing">Message scanner</button>
+    <button class="tab" data-tab="url">Link checker</button>
+    <button class="tab" data-tab="logs">Log triage</button>
+    <button class="tab" data-tab="code">Code audit</button>
+    <button class="tab" data-tab="file">File inspector</button>
+    <button class="tab" data-tab="password">Password lab</button>
+    <button class="tab" data-tab="chat">AI advisor</button>
+    <div class="status glass-in" id="status">Checking AI…</div>
+    <div class="who"><span id="who"></span><button class="ghost" id="logout">Sign out</button></div>
+  </nav>
+
+  <main>
+    <section id="dash" class="view on">
+      <h1>Threat overview</h1>
+      <div class="grid4">
+        <div class="glass stat"><b id="sTotal">0</b><span>Scans run</span></div>
+        <div class="glass stat"><b id="sThreat">0</b><span>High or critical</span></div>
+        <div class="glass stat"><b id="sMed">0</b><span>Medium</span></div>
+        <div class="glass stat"><b id="sLow">0</b><span>Low</span></div>
+      </div>
+      <div class="two">
+        <div class="glass pad"><h2>Last 7 days</h2><div class="bars" id="days"></div></div>
+        <div class="glass pad"><h2>Security report</h2><p class="muted" style="margin:6px 0 0">Turn your scan history into an executive summary you can download.</p>
+          <div class="row"><button id="repGo">Generate report</button><button class="ghost" id="repDl" hidden>Download .md</button></div></div>
+      </div>
+      <div class="glass pad report" id="repOut" hidden></div>
+      <div class="glass pad">
+        <div class="row"><h2>Recent scans</h2><button class="ghost" id="clearHist">Clear history</button></div>
+        <div id="hist" class="hist"></div>
+      </div>
+    </section>
+
+    <section id="agent" class="view">
+      <h1>SOC agent</h1><p class="muted">Describe an incident or paste evidence. The agent picks its own tools, gathers evidence and writes a brief.</p>
+      <div class="glass pad"><textarea class="tall" id="agentIn" placeholder="Example: A user got this email and clicked the link… [paste email, logs or IPs]"></textarea>
+      <div class="row"><button id="agentGo">Investigate</button><button class="ghost" id="agentSample">Load sample</button></div></div>
+      <div class="steps" id="steps"></div><div id="brief"></div>
+    </section>
+
+    <section id="intel" class="view">
+      <h1>Threat intel</h1><p class="muted">Look up an IP address, domain, URL or file hash against VirusTotal and AbuseIPDB.</p>
+      <div class="glass pad"><input type="text" id="intelIn" placeholder="203.0.113.9, evil-example.com, https://…, or a file hash" autocomplete="off">
+      <div class="row"><button id="intelGo">Look up</button><button class="ghost" id="intelSample">Load sample</button></div></div>
+      <div id="intelOut" class="out"></div>
+    </section>
+    <section id="phishing" class="view tool" data-api="/api/analyze/phishing" data-key="text">
+      <h1>Message scanner</h1><p class="muted">Check an email, SMS or chat message for phishing and scam tactics.</p>
+      <div class="glass pad"><textarea placeholder="Paste the full message here…"></textarea>
+      <div class="row"><button class="go">Scan message</button><button class="ghost sample" data-s="Dear customer, your account will be suspended within 24 hours. Verify your password immediately at http://192.168.4.7/login or claim your gift card. Contact support@secure-paypal-help.xyz">Load sample</button></div></div><div class="out"></div>
+    </section>
+    <section id="url" class="view tool" data-api="/api/analyze/url" data-key="url">
+      <h1>Link checker</h1><p class="muted">Checks a link's structure for lookalike and high-risk patterns. It is never opened.</p>
+      <div class="glass pad"><input type="text" placeholder="https://example.com/path">
+      <div class="row"><button class="go">Check link</button><button class="ghost sample" data-s="http://secure-login-paypal.account-verify.xyz/update?id=123">Load sample</button></div></div><div class="out"></div>
+    </section>
+    <section id="logs" class="view tool" data-api="/api/analyze/logs" data-key="logs">
+      <h1>Log triage</h1><p class="muted">Paste server, auth or web logs. Findings are mapped to MITRE ATT&amp;CK.</p>
+      <div class="glass pad"><textarea class="tall" placeholder="Paste log lines…"></textarea>
+      <div class="row"><button class="go">Analyze logs</button><button class="ghost sample" data-s="Oct 31 10:01:11 sshd: Failed password for root from 203.0.113.9
+Oct 31 10:01:13 sshd: Failed password for root from 203.0.113.9
+Oct 31 10:01:15 sshd: Failed password for admin from 203.0.113.9
+Oct 31 10:01:18 sshd: Failed password for invalid user test from 203.0.113.9
+Oct 31 10:01:20 sshd: Failed password for root from 203.0.113.9
+Oct 31 10:02:02 GET /search?q=1' OR 1=1-- 200 from 203.0.113.9">Load sample</button></div></div><div class="out"></div>
+    </section>
+    <section id="code" class="view tool" data-api="/api/analyze/code" data-key="code">
+      <h1>Code audit</h1><p class="muted">Find vulnerabilities with CWE references and concrete fixes.</p>
+      <div class="glass pad"><textarea class="tall mono" placeholder="Paste source code…"></textarea>
+      <div class="row"><button class="go">Audit code</button><button class="ghost sample" data-s="const q = &quot;SELECT * FROM users WHERE name='&quot; + req.query.name + &quot;'&quot;;
+db.query(q);
+const apiKey = 'sk_live_abcdef123456';
+el.innerHTML = req.query.msg;">Load sample</button></div></div><div class="out"></div>
+    </section>
+
+    <section id="file" class="view">
+      <h1>File inspector</h1><p class="muted">Static triage up to 1.5 MB: hashes, real file type, entropy and suspicious strings. The file is never executed or stored.</p>
+      <div class="glass pad"><label class="drop" id="drop" for="fileIn">Drop a file here or click to choose</label><input type="file" id="fileIn" hidden></div>
+      <div id="fileOut" class="out"></div>
+    </section>
+
+    <section id="password" class="view">
+      <h1>Password lab</h1><p class="muted">Strength is measured on the server. Only numeric metrics, never the password, go to the AI.</p>
+      <div class="glass pad"><input type="password" id="pw" placeholder="Type a password to test" autocomplete="off"><div class="row"><button id="pwGo">Test password</button></div></div>
+      <div id="pwOut" class="out"></div>
+    </section>
+
+    <section id="chat" class="view">
+      <h1>AI advisor</h1>
+      <div class="glass chatbox"><div id="msgs"><div class="m bot">Hi, I'm CyberShield AI. Ask about securing accounts, spotting scams, hardening a server or reading a vulnerability report.</div></div>
+      <form id="chatForm"><input id="chatIn" type="text" placeholder="Ask a security question…" autocomplete="off"><button>Send</button></form></div>
+    </section>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
